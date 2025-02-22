@@ -7,19 +7,21 @@
     <style>
         body {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
             height: 100vh;
-            background-color: #f0f0f0;
+            background-color: white;
+            gap: 20px;
         }
         .scratch-card {
             position: relative;
             width: 300px;
             height: 200px;
-            background: #ddd;
             overflow: hidden;
             border-radius: 10px;
             text-align: center;
+            cursor: pointer;
         }
         canvas {
             position: absolute;
@@ -38,37 +40,51 @@
     </style>
 </head>
 <body>
-    <div class="scratch-card">
-        <div class="message">Surprise Message!</div>
+    <div class="scratch-card" data-url="page1.html" style="background-color: lightblue;">
+        <div class="message">Go to Page 1</div>
+        <canvas></canvas>
+    </div>
+    <div class="scratch-card" data-url="page2.html" style="background-color: lightcoral;">
+        <div class="message">Go to Page 2</div>
+        <canvas></canvas>
+    </div>
+    <div class="scratch-card" data-url="page3.html" style="background-color: lightgreen;">
+        <div class="message">Go to Page 3</div>
         <canvas></canvas>
     </div>
     
     <script>
-        const canvas = document.querySelector("canvas");
-        const ctx = canvas.getContext("2d");
-        const scratchCard = document.querySelector(".scratch-card");
-        canvas.width = scratchCard.clientWidth;
-        canvas.height = scratchCard.clientHeight;
-        
-        ctx.fillStyle = "gray";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        let isScratching = false;
-        
-        function scratch(e) {
-            if (!isScratching) return;
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            ctx.globalCompositeOperation = "destination-out";
-            ctx.beginPath();
-            ctx.arc(x, y, 20, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        
-        canvas.addEventListener("mousedown", () => (isScratching = true));
-        canvas.addEventListener("mouseup", () => (isScratching = false));
-        canvas.addEventListener("mousemove", scratch);
+        document.querySelectorAll(".scratch-card").forEach(card => {
+            const canvas = document.createElement("canvas");
+            card.appendChild(canvas);
+            const ctx = canvas.getContext("2d");
+            canvas.width = card.clientWidth;
+            canvas.height = card.clientHeight;
+            
+            ctx.fillStyle = "gray";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            let isScratching = false;
+            
+            function scratch(e) {
+                if (!isScratching) return;
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                ctx.globalCompositeOperation = "destination-out";
+                ctx.beginPath();
+                ctx.arc(x, y, 20, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            canvas.addEventListener("mousedown", () => (isScratching = true));
+            canvas.addEventListener("mouseup", () => (isScratching = false));
+            canvas.addEventListener("mousemove", scratch);
+            
+            card.addEventListener("click", () => {
+                window.location.href = card.getAttribute("data-url");
+            });
+        });
     </script>
 </body>
 </html>
